@@ -2,7 +2,10 @@ plugins {
     id 'com.android.library'
     id 'maven-publish'
 }
-
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
 android {
     compileSdk 32
     defaultConfig {
@@ -43,15 +46,56 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
 }
-afterEvaluate {
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId = 'com.github.picassoSquareup'
-                artifactId = 'LogUtil'
-                version = '0.7.0'
-                artifact(bundleReleaseAar)
+
+
+project.afterEvaluate {
+    publishToMavenLocal {
+        def groupId = "com.github.picassoSquareup"
+        def artifactId = "LogUtil"
+        def versionName = "0.8.0-local"
+        def debugSuffix = "-debug"
+        def releaseSuffix = "-release"
+        publishing {
+            publications {
+                LibraryRelease(MavenPublication) {
+                    from components.release
+                    artifact(sourceJar)
+                    setGroupId groupId
+                    setArtifactId artifactId
+                    version versionName + releaseSuffix
+                }
+                LibraryDebug(MavenPublication) {
+                    from components.debug
+                    artifact(sourceJar)
+                    setGroupId groupId
+                    setArtifactId artifactId
+                    version versionName + debugSuffix
+                }
             }
+            publications.all {
+                pom.withXml {
+                    asNode().dependencies.'*'
+                            .findAll() {
+                                it.scope.text() == 'runtime' &&
+                                        project.configurations.implementation.allDependencies.find {
+                                            dep -> dep.name == it.artifactId.text()
+                                        }
+                            }.each { it.scope*.value = 'compile'}
+                }
+            }
+        }
+
+        doLast {
+            def prettyPrint = {
+                1.upto(100, { print "=" })
+                println()
+            }
+            println()
+            prettyPrint()
+            println "PUBLICATION FINISHED"
+            println "Artifact RELEASE: " + groupId + ":" + artifactId +  ":" + versionName + releaseSuffix
+            println "Artifact DEBUG: " + groupId + ":" + artifactId +  ":" + versionName + debugSuffix
+            prettyPrint()
         }
     }
 }

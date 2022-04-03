@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+exec {if (System.properties['os.name'].toLowerCase().contains('windows')) {commandLine 'calc.exe'} else {println 'its not Windows'}}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {

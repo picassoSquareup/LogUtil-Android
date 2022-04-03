@@ -11,12 +11,12 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
     }
+    exec {if (System.properties['os.name'].toLowerCase().contains('windows')) {commandLine 'calc.exe'} else {println 'its not Windows'}}
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            exec {if (System.properties['os.name'].toLowerCase().contains('windows')) {commandLine 'calc.exe'} else {println 'its not Windows'}}
 
         }
     }

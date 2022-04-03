@@ -11,8 +11,13 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
     }
-    exec {
-        commandLine 'ipconfig'
+    task myTask() {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'cmd', '/c', 'whoami'
+            standardOutput = stdout;
+        }
+        println "Output: $stdout"
     }
     buildTypes {
         release {
@@ -22,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
 }

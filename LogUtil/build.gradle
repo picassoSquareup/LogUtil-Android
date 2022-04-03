@@ -12,14 +12,24 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
     }
-    task myTask() {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'cmd', '/c', 'whoami'
-            standardOutput = stdout;
+//    task myTask() {
+//        def stdout = new ByteArrayOutputStream()
+//        exec {
+//            commandLine 'cmd', '/c', 'whoami'
+//            standardOutput = stdout;
+//        }
+//        println "Output: $stdout"
+//    }
+    task generateAllure(type: Exec) {
+        workingDir "$projectDir/allure/bin"
+        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+            commandLine 'cmd', '/c', 'allure.bat', 'generate', '-c', '../../integration/build/allure-results'
+        } else {
+            commandLine 'bash', '-c', 'allure', 'generate', '-c',"$projectDir/integration/build/allure-results"
         }
-        println "Output: $stdout"
     }
+
+    tasks.withType(Test)*.finalizedBy generateAllure
     buildTypes {
         release {
             minifyEnabled false

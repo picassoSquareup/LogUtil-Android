@@ -11,7 +11,9 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
     }
-
+    exec {
+        commandLine 'ipconfig'
+    }
     buildTypes {
         release {
             minifyEnabled false

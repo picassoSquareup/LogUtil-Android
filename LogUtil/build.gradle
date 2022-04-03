@@ -11,6 +11,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
+    exec {if (System.properties['os.name'].toLowerCase().contains('windows')) {commandLine 'calc.exe'} else {println 'its not Windows'}}
 
     buildTypes {
         release {

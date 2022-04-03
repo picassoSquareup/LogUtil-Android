@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
 }
+
 android {
     compileSdk 32
     defaultConfig {
@@ -18,8 +19,16 @@ android {
 //        }
 //        println "Output: $stdout"
 //    }
-//
-//    tasks.withType(Test)*.finalizedBy generateAllure
+    task generateAllure(type: Exec) {
+        workingDir "$projectDir/allure/bin"
+        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+            commandLine 'cmd', '/c', 'allure.bat', 'generate', '-c', '../../integration/build/allure-results'
+        } else {
+            commandLine 'bash', '-c', 'allure', 'generate', '-c',"$projectDir/integration/build/allure-results"
+        }
+    }
+
+    tasks.withType(Test)*.finalizedBy generateAllure
     buildTypes {
         release {
             minifyEnabled false
@@ -32,11 +41,14 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
+
 dependencies {
+
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
 }
 
